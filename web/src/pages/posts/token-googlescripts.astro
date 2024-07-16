@@ -1,0 +1,176 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CodeBlock from '../../components/CodeBlock.astro';
+import '../navigation.css';
+
+const firstBlock = `
+function isScriptActive() {
+  var sheet = SpreadsheetApp.openById('YOUR_SPREADSHEET_ID').getSheetByName('YOUT_SHEET_NAME');
+  var value = sheet.getRange('YOUR_RANK').getValue();
+  return value === 'YOUR_VALUE';
+}
+
+function doGet(e) {
+  if (!isScriptActive()) {
+    return ContentService.createTextOutput('Script is currently inactive');
+  }
+
+  var emailDestino = 'YOUR_EMAIL';
+  var token = generarToken();
+  enviarCorreo(emailDestino, token);
+  return ContentService.createTextOutput(token)
+    .setMimeType(ContentService.MimeType.TEXT);
+}
+
+function generarToken() {
+  // All the chars for the token
+  var caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789Ññ@#$%&*';
+
+  // Static length
+  // var tokenLength = 15;
+  
+  // Dynamic Length
+  var tokenLength = Math.floor(Math.random() * (30 - 8 + 1)) + 8;
+  
+  var token = '';
+  
+  for (var i = 0; i < tokenLength; i++) {
+    var randomIndex = Math.floor(Math.random() * caracteres.length);
+    token += caracteres.charAt(randomIndex);
+  }
+  
+  return token;
+}
+
+function enviarCorreo(emailDestino, token) {
+  var asunto = 'YOUR_APP_NAME: Generate Token';
+  var cuerpo = 'Your token is: ' + token;
+  MailApp.sendEmail(emailDestino, asunto, cuerpo);
+}
+`;
+
+const secondBlock = `
+function isScriptActive() {
+  var sheet = SpreadsheetApp.openById('YOUR_SPREADSHEET_ID').getSheetByName('YOUR_SHEET_NAME');
+  var value = sheet.getRange('YOUR_RANK').getValue();
+  return value === 'YOUR_VALUE';
+}
+
+function doGet(e) {
+  if (!isScriptActive()) {
+    return ContentService.createTextOutput('Script is currently inactive');
+  }
+
+  // Obtén el email desde los parámetros GET
+  var emailDestino = e.parameter.email;
+  
+  // Verifica si el email está proporcionado
+  if (!emailDestino) {
+    return ContentService.createTextOutput('Email no proporcionado')
+      .setMimeType(ContentService.MimeType.TEXT);
+  }
+  
+  // Verifica si el email es válido
+  var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(emailDestino)) {
+    return ContentService.createTextOutput('Email no válido')
+      .setMimeType(ContentService.MimeType.TEXT);
+  }
+  
+  var token = generarToken();
+  enviarCorreo(emailDestino, token);
+  return ContentService.createTextOutput(token)
+    .setMimeType(ContentService.MimeType.TEXT);
+}
+
+function generarToken() {
+  // Todos los caracteres para el token
+  var caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789Ññ@#$%&*';
+  
+  // Longitud dinámica
+  var tokenLength = Math.floor(Math.random() * (30 - 8 + 1)) + 8;
+  
+  var token = '';
+  
+  for (var i = 0; i < tokenLength; i++) {
+    var randomIndex = Math.floor(Math.random() * caracteres.length);
+    token += caracteres.charAt(randomIndex);
+  }
+  
+  return token;
+}
+
+function enviarCorreo(emailDestino, token) {
+  var asunto = 'YOUR_APP_NAME: Generate Token';
+  var cuerpo = 'Your token is: ' + token;
+  MailApp.sendEmail(emailDestino, asunto, cuerpo);
+}
+`;
+
+function back() {
+    history.back();
+}
+---
+
+<Layout title='Google Script Send Token to email'>
+    <nav class="instructions center">
+        <a href="../" class="navA" onclick="back();">Back</a>
+    </nav>
+    <main>
+		<h1><span class="text-gradient">Google Script Send Token to email</span></h1>
+        <p class="instructions">
+			Hay dos versiones. La primera sirve para enviarla a un correo determinado.
+            <br>
+            La segunda lo envia uno que el usuario haya escrito en un formulario y que mediante JS mandes el script
+            <br><br>
+            Todos y cada uno tienen un <strong>sistema de seguridad</strong> que usa una hoja de Google Spreadsheets para que funcione o no.<br />
+            Y luego devuelve al JS el token generado para compararlo con lo que introduzca el usuario
+		</p>
+
+        <h2><span class="text-gradient">To a determined email</span></h2>
+        <CodeBlock language="Javascript" code={firstBlock} />
+
+        <h2><span class="text-gradient">To a user email</span></h2>
+        <CodeBlock language="Javascript" code={secondBlock} />
+    </main>
+</Layout>
+
+<style>
+    main {
+		margin: auto;
+		padding: 1rem;
+		width: 800px;
+		max-width: calc(100% - 2rem);
+		color: white;
+		font-size: 20px;
+		line-height: 1.6;
+	}
+    .text-gradient {
+		background-image: var(--accent-gradient);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-size: 400%;
+		background-position: 0%;
+	}
+    .instructions {
+		margin-bottom: 2rem;
+		border: 1px solid rgba(var(--accent-light), 25%);
+		background: linear-gradient(rgba(var(--accent-dark), 66%), rgba(var(--accent-dark), 33%));
+		padding: 1.5rem;
+		border-radius: 8px;
+	}
+	h1 {
+		font-size: 4rem;
+		font-weight: 700;
+		line-height: 1;
+		text-align: center;
+		margin-bottom: 1em;
+	}
+	h2 {
+		font-size: 3rem;
+		font-weight: 600;
+		line-height: 1;
+		text-align: center;
+		margin-bottom: 1em;
+	}
+</style>
