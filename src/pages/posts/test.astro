@@ -1,0 +1,16 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import CodeBlock from '../../components/CodeBlock-copia.astro';
+import '../navigation.css';
+
+const codeJS = `console.log("Hellow World!")`
+const codeCS = `Console.WriteLine("Hello World!")`
+const codePy = `print("HEllow World!")`
+const codeBash = `echo("Hellow")`
+---
+
+<Layout title='Test'>
+    <main>
+        <CodeBlock code={codeJS} lang="javascript" />
+    </main>
+</Layout>
